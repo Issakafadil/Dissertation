@@ -106,6 +106,30 @@ class XESParser:
         else:
             print("Event missing name or timestamp")
             return None
-    
-    # More methods like process_all_xes_files can be added below...
+
+
+    def process_all_xes_files(self, max_traces=100):
+        """Process all XES files in the specified directory.
+
+        Args:
+            max_traces (int): The maximum number of traces to process across all files.
+
+        Returns:
+            list: A list of all traces processed from all files.
+        """
+        all_traces = []
+        xes_files = [f for f in os.listdir(self.xes_dir_path) if f.endswith('.xes')]
+        
+        for file_name in xes_files:
+            if len(all_traces) >= max_traces:
+                break
+            file_path = os.path.join(self.xes_dir_path, file_name)
+            file_traces = self.parse_xes_event_log(file_path, max_traces=max_traces - len(all_traces))
+            all_traces.extend(file_traces)
+            print(f"File processed: {file_name}. Total traces collected: {len(all_traces)}")
+            if len(all_traces) >= max_traces:
+                print(f"Reached the overall limit of {max_traces} traces. Stopping.")
+                break
+        return all_traces
+
 
